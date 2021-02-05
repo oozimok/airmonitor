@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta charset="utf-8"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+        <script src="gauge.min.js"></script>
+        <!-- CSS -->
+        <style>
+            .container {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                width: 90%;
+                margin: 1px auto;
+                position: relative;
+                text-align:center;
+            }
+            .block {
+                height: 220px;
+                width: 220px;
+                margin: 10px;
+            }
+            h3 {
+                font-family: Arial;
+                font-size: 1.5rem;
+                text-align: center;
+            }
+            canvas{
+                margin-right: auto;
+                margin-left: auto;
+                display: block;
+            }
+            p {
+                font-family: Arial;
+                font-size: 1rem;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <!-- BODY -->
+    <body>
+        <div class="container">
+            <div class="block">
+                <h3>CO<sub>2</sub></h3>
+                <canvas id="chart-co2"></canvas>
+                <p id="co2">0</p>
+            </div>
+            <div class="block">
+                <h3>Влажность</h3>
+                <canvas id="chart-humidity"></canvas>
+                <p id="humidity">0</p>
+            </div>
+            <div class="block">
+                <h3>Частицы РМ2.5</h3>
+                <canvas id="chart-pm25"></canvas>
+                <p id="pm25">0</p>
+            </div>
+            <div class="block">
+                <h3>Температура</h3>
+                <canvas id="chart-temperature"></canvas>
+                <p id="temperature">0</p>
+            </div>
+            <div class="block">
+                <h3>Орг. вещества</h3>
+                <canvas id="chart-tvoc"></canvas>
+                <p id="tvoc">0</p>
+            </div>
+        </div>
+    </body>
+
+    <!-- SCRIPT  -->
+
+    <script>
+
+    </script>
+
+    <script>
+        var opts = {
+            angle: 0,
+            lineWidth: 0.2,
+            radiusScale: 0.89,
+            pointer: {
+                length: 0.54,
+                strokeWidth: 0.053,
+                color: '#000000'
+            },
+            strokeColor: '#E0E0E0',
+            generateGradient: true,
+            highDpiSupport: true,
+        };
+
+        // CO2
+        var co2_target = document.getElementById('chart-co2');
+        var co2_val = document.getElementById('co2');
+        var co2_gauge = new Gauge(co2_target).setOptions(Object.assign(opts, {
+            staticZones: [
+                {strokeStyle: "#30B32D", min: 0, max: 999}, // Green
+                {strokeStyle: "#FFDD00", min: 1000, max: 1999}, // Yellow
+                {strokeStyle: "#F03E3E", min: 2000, max: 3000}  // Red
+            ],
+        }));
+        co2_gauge.maxValue = 3000;
+        co2_gauge.minValue = 0;
+
+        // HUMIDITY
+        var humidity_target = document.getElementById('chart-humidity');
+        var hum_val = document.getElementById('humidity');
+        var hum_gauge = new Gauge(humidity_target).setOptions(Object.assign(opts, {
+            staticZones: [
+                {strokeStyle: "#F03E3E", min: 0, max: 14}, // Red
+                {strokeStyle: "#FFDD00", min: 15, max: 29}, // Yellow
+                {strokeStyle: "#30B32D", min: 30, max: 40}, // Green
+                {strokeStyle: "#FFDD00", min: 41, max: 60}, // Yellow
+                {strokeStyle: "#F03E3E", min: 61, max: 100}  // Red
+            ],
+        }));
+        hum_gauge.maxValue = 100;
+        hum_gauge.minValue = 0;
+
+        // PM 2.5
+        var pm25_target = document.getElementById('chart-pm25');
+        var pm25_val = document.getElementById('pm25');
+        var pm25_gauge = new Gauge(pm25_target).setOptions(Object.assign(opts, {
+            staticZones: [
+                {strokeStyle: "#30B32D", min: 0, max: 35}, // Green
+                {strokeStyle: "#FFDD00", min: 36, max: 75}, // Yellow
+                {strokeStyle: "#FF8000", min: 76, max: 115}, // Orange
+                {strokeStyle: "#F03E3E", min: 116, max: 150},  // Red
+                {strokeStyle: "#8900ab", min: 151, max: 250},  // 
+                {strokeStyle: "#6e0002", min: 251, max: 300}  // 
+            ]
+        }));
+        pm25_gauge.maxValue = 300;
+        pm25_gauge.minValue = 0;
+
+        // TEMPERATURE
+        var temperature_target = document.getElementById('chart-temperature');
+        var temp_val = document.getElementById('temperature');
+        var temp_gauge = new Gauge(temperature_target).setOptions(Object.assign(opts, {
+            staticZones: [
+                {strokeStyle: "#F03E3E", min: 0, max: 14}, // Red
+                {strokeStyle: "#FFDD00", min: 15, max: 21}, // Yellow
+                {strokeStyle: "#30B32D", min: 22, max: 25}, // Green
+                {strokeStyle: "#FFDD00", min: 26, max: 30}, // Yellow
+                {strokeStyle: "#F03E3E", min: 31, max: 50}  // Red
+            ],
+        }));
+        temp_gauge.maxValue = 50;
+        temp_gauge.minValue = 0;
+
+        // TVOC
+        var tvoc_target = document.getElementById('chart-tvoc');
+        var tvoc_val = document.getElementById('tvoc');
+        var tvoc_gauge = new Gauge(tvoc_target).setOptions(Object.assign(opts, {
+            staticZones: [
+                {strokeStyle: "#30B32D", min: 0, max: 1.0}, // Green
+                {strokeStyle: "#FFDD00", min: 1.1, max: 3.0}, // Yellow
+                {strokeStyle: "#F03E3E", min: 3.1, max: 9.0},  // Red
+                {strokeStyle: "#8900ab", min: 9.0, max: 10},  // 
+            ],
+        }));
+        tvoc_gauge.maxValue = 10;
+        tvoc_gauge.minValue = 0;
+
+        // ----------------------------
+
+        var socket = io({
+            transports: ["websocket"],
+        });
+
+        socket.on('message', function(data) {
+            try {
+                // CO2
+                var co2 = parseFloat(data.co2).toFixed(2);
+                co2_gauge.set(co2);
+                co2_val.innerHTML = co2 + " ppm";
+
+                // HUMIDITY
+                var humidity = parseFloat(data.humidity).toFixed(1);
+                hum_gauge.set(humidity);
+                hum_val.innerHTML = humidity + " %";
+
+                // PM 2.5
+                var pm25 = parseFloat(data.pm25).toFixed(1);
+                console.log(pm25);
+                pm25_gauge.set(pm25);
+                pm25_val.innerHTML = pm25 + " µg/m3";
+
+                // TEMPERATURE
+                var temperature = parseFloat(data.temperature).toFixed(1);
+                temp_gauge.set(temperature);
+                temp_val.innerHTML = temperature + " °C";
+
+                // TVOC
+                var tvoc = (parseFloat(data.tvoc) * 0.11 / 24.45).toFixed(3);
+                tvoc_gauge.set(tvoc);
+                tvoc_val.innerHTML = tvoc + " mg/m3";
+            } catch (err) {
+                console.log(err);
+            }
+        });
+    </script>
+</html>

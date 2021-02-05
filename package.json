@@ -1,0 +1,13 @@
+{
+  "name": "airmonitor",
+  "version": "1.0.0",
+  "description": "air monitor",
+  "main": "app.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "miio": "^0.15.6",
+    "socket.io": "^2.1.1"
+  }
+}
