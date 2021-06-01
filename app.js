@@ -25,11 +25,11 @@ class ClearGrassAirMonitor {
         const { width } = screen.getPrimaryDisplay().workAreaSize;
         this.win = new BrowserWindow({
             width,
-            height: 225,
+            height: 250,
             y: 0,
             x: 0,
             title: 'AirMonitor',
-            frame: false,
+            frame: true,
             backgroundColor: '#000000',
             webPreferences: {
                 nodeIntegration: false, // значение по умолчанию после Electron v5
@@ -94,7 +94,7 @@ class ClearGrassAirMonitor {
 
 app.whenReady().then(() => {
     const cgim = new ClearGrassAirMonitor({
-        ip: '192.168.2.3',
+        ip: '192.168.2.2',
         token: '6542485a75706143416f517471645968',
     }, console);
     cgim.createWindow();
