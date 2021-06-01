@@ -1,71 +1,109 @@
-const express = require('express');
-const app = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const { app, BrowserWindow, screen, ipcMain } = require('electron');
 const miio = require('miio');
+const path = require('path');
+const dev = false;
 
-app.use(express.static(__dirname));
+if (dev) {
+    try {
+        require('electron-reloader')(module);
+    } catch (e) {
+        console.log(e);
+    }
+}
 
 class ClearGrassAirMonitor {
 
-    constructor(config, io, log) {
+    constructor(config, log) {
         this.ip = config.ip;
         this.token = config.token;
-        this.io = io;
         this.log = log;
-        this.discover();
+        this.win = null;
+        this.device = null;
     }
 
-    discover() {
-        const log = this.log;
-        const that = this;
+    createWindow() {
+        const { width } = screen.getPrimaryDisplay().workAreaSize;
+        this.win = new BrowserWindow({
+            width,
+            height: 225,
+            y: 0,
+            x: 0,
+            title: 'AirMonitor',
+            frame: false,
+            backgroundColor: '#000000',
+            webPreferences: {
+                nodeIntegration: false, // значение по умолчанию после Electron v5
+                contextIsolation: true, // защита от загрязнения прототипа
+                enableRemoteModule: false, // выключить удаленный
+                preload: path.join(__dirname, 'js', 'preload.js')
+            }
+        })
+        this.win.loadFile('index.html');
+        if (dev) {
+            this.win.webContents.openDevTools()
+        }
+    }
 
-        miio.device({
-                address: this.ip,
-                token: this.token
-            })
+    listener() {
+        ipcMain.on('get-device', async (event, args) => {
+            const success = await this.getDevice();
+            this.win.webContents.send('device-result', { success });
+        });
+
+        ipcMain.on('get-data', async (event, args) => {
+            const value = await this.getData();
+            this.win.webContents.send('data-result', value);
+        });
+    }
+
+    async getDevice() {
+        return miio.device({ address: this.ip, token: this.token })
             .then(device => {
-                log.debug('Discovered Mi Clear Grass (%s) at %s ', device.miioModel, this.ip );
-
-                if (device.miioModel == 'cgllc.airmonitor.s1') {
-                    that.device = device;
-			        that.loadData();
+                this.log.debug('Discovered Mi Clear Grass (%s) at %s ', device.miioModel, this.ip );
+                if (device.miioModel === 'cgllc.airmonitor.s1') {
+                    this.device = device;
+                    return true;
                 }
+                return false;
             })
             .catch(err => {
-                log.debug('Failed to discover Clear Grass at %s', this.ip);
-                console.log('Will retry after 30 seconds' + err);
-                setTimeout(function() {
-                    that.discover();
-                }, 30000);
+                this.log.debug('Failed to discover Clear Grass at %s', this.ip);
+                return false;
             });
     }
 
-    loadData() {
-        let io = this.io;
-        let log = this.log;
-        let that = this;
-
-	    that.device.call("get_prop", ["co2","pm25","tvoc","temperature","humidity"]).then(result => {
-            // log.debug('result :  %s', JSON.stringify(result));
-            io.emit('message', result);
-        }).catch(function(err) {
-            log.debug('Failed to get_prop  %s', err);
-        });
-
-        setTimeout(function() {
-            that.loadData();
-        }, 5000);
+    async getData() {
+        if (!this.device) {
+            return {};
+        }
+        return await this.device.call("get_prop", ["co2","pm25","tvoc","temperature","humidity"])
+            .then(this.convertData)
+            .catch(err => this.log.debug('Failed to get_prop  %s', err));
     }
-    
-};
 
-const server = http.listen(3000, () => {
-    console.log('server is running on port', server.address().port);
+    convertData(result = {co2: 0, pm25: 0, tvoc: 0, temperature:0, humidity:0}) {
+        return {
+            co2        : Number(parseFloat(result.co2).toFixed(2)),
+            pm25       : Number(parseFloat(result.pm25).toFixed(1)),
+            tvoc       : Number((parseFloat(result.tvoc) * 0.11 / 24.45).toFixed(3)),
+            temperature: Number(parseFloat(result.temperature).toFixed(1)),
+            humidity   : Number(parseFloat(result.humidity).toFixed(1)),
+        };
+    }
+}
 
-    new ClearGrassAirMonitor({
+app.whenReady().then(() => {
+    const cgim = new ClearGrassAirMonitor({
         ip: '192.168.2.3',
         token: '6542485a75706143416f517471645968',
-    }, io, console);
+    }, console);
+    cgim.createWindow();
+    cgim.listener();
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) cgim.createWindow();
+    });
+});
 
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit();
 });
