@@ -20,10 +20,12 @@ const co2_gauge = new Gauge(co2_target).setOptions(Object.assign(opts, {
     staticZones: [
         {strokeStyle: "#30B32D", min: 0, max: 999}, // Green
         {strokeStyle: "#FFDD00", min: 1000, max: 1999}, // Yellow
-        {strokeStyle: "#F03E3E", min: 2000, max: 3000}  // Red
+        {strokeStyle: "#F03E3E", min: 2000, max: 2999}, // Red
+        {strokeStyle: "#8900ab", min: 3000, max: 3999}, //
+        {strokeStyle: "#6e0002", min: 4000, max: 5000}  //
     ],
 }));
-co2_gauge.maxValue = 3000;
+co2_gauge.maxValue = 5000;
 co2_gauge.minValue = 0;
 
 // HUMIDITY
@@ -102,26 +104,36 @@ window.api.receive('device-result', (data) => {
 window.api.receive('data-result', (data) => {
     // CO2
     const co2 = parseFloat(data.co2).toFixed(2);
-    co2_gauge.set(co2);
-    co2_val.innerHTML = co2 + " ppm";
+    if (co2_gauge.minValue >= co2 && co2_gauge.maxValue <= co2) {
+        co2_gauge.set(0);
+        co2_val.innerHTML = co2 + " ppm";
+    }
 
     // HUMIDITY
     const humidity = parseFloat(data.humidity).toFixed(1);
-    hum_gauge.set(humidity);
-    hum_val.innerHTML = humidity + " %";
+    if (hum_gauge.minValue >= humidity && hum_gauge.maxValue <= humidity) {
+        hum_gauge.set(humidity);
+        hum_val.innerHTML = humidity + " %";
+    }
 
     // PM 2.5
     const pm25 = parseFloat(data.pm25).toFixed(1);
-    pm25_gauge.set(pm25);
-    pm25_val.innerHTML = pm25 + " µg/m3";
+    if (pm25_gauge.minValue >= pm25 && pm25_gauge.maxValue <= pm25) {
+        pm25_gauge.set(pm25);
+        pm25_val.innerHTML = pm25 + " µg/m3";
+    }
 
     // TEMPERATURE
     const temperature = parseFloat(data.temperature).toFixed(1);
-    temp_gauge.set(temperature);
-    temp_val.innerHTML = temperature + " °C";
+    if (temp_gauge.minValue >= temperature && temp_gauge.maxValue <= temperature) {
+        temp_gauge.set(temperature);
+        temp_val.innerHTML = temperature + " °C";
+    }
 
     // TVOC
     const tvoc = parseFloat(data.tvoc).toFixed(3);
-    tvoc_gauge.set(tvoc);
-    tvoc_val.innerHTML = tvoc + " mg/m3";
+    if (tvoc_gauge.minValue >= tvoc && tvoc_gauge.maxValue <= tvoc) {
+        tvoc_gauge.set(tvoc);
+        tvoc_val.innerHTML = tvoc + " mg/m3";
+    }
 });
