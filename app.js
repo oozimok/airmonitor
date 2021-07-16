@@ -27,7 +27,7 @@ class ClearGrassAirMonitor {
             width,
             height: 250,
             y: 0,
-            x: 0,
+            x: width,
             title: 'AirMonitor',
             frame: true,
             backgroundColor: '#000000',
@@ -95,7 +95,7 @@ class ClearGrassAirMonitor {
 app.whenReady().then(() => {
     const cgim = new ClearGrassAirMonitor({
         ip: '192.168.2.2',
-        token: '6542485a75706143416f517471645968',
+        //token: '6542485a75706143416f517471645968',
     }, console);
     cgim.createWindow();
     cgim.listener();

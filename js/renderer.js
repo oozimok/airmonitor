@@ -103,36 +103,36 @@ window.api.receive('device-result', (data) => {
 
 window.api.receive('data-result', (data) => {
     // CO2
-    const co2 = parseFloat(data.co2).toFixed(2);
-    if (co2_gauge.minValue >= co2 && co2_gauge.maxValue <= co2) {
+    const co2 = +parseFloat(data.co2).toFixed(2);
+    if (co2_gauge.minValue <= co2 && co2_gauge.maxValue >= co2) {
         co2_gauge.set(0);
         co2_val.innerHTML = co2 + " ppm";
     }
 
     // HUMIDITY
-    const humidity = parseFloat(data.humidity).toFixed(1);
-    if (hum_gauge.minValue >= humidity && hum_gauge.maxValue <= humidity) {
+    const humidity = +parseFloat(data.humidity).toFixed(1);
+    if (hum_gauge.minValue <= humidity && hum_gauge.maxValue >= humidity) {
         hum_gauge.set(humidity);
         hum_val.innerHTML = humidity + " %";
     }
 
     // PM 2.5
-    const pm25 = parseFloat(data.pm25).toFixed(1);
-    if (pm25_gauge.minValue >= pm25 && pm25_gauge.maxValue <= pm25) {
+    const pm25 = +parseFloat(data.pm25).toFixed(1);
+    if (pm25_gauge.minValue <= pm25 && pm25_gauge.maxValue >= pm25) {
         pm25_gauge.set(pm25);
         pm25_val.innerHTML = pm25 + " µg/m3";
     }
 
     // TEMPERATURE
-    const temperature = parseFloat(data.temperature).toFixed(1);
-    if (temp_gauge.minValue >= temperature && temp_gauge.maxValue <= temperature) {
+    const temperature = +parseFloat(data.temperature).toFixed(1);
+    if (temp_gauge.minValue <= temperature && temp_gauge.maxValue >= temperature) {
         temp_gauge.set(temperature);
         temp_val.innerHTML = temperature + " °C";
     }
 
     // TVOC
-    const tvoc = parseFloat(data.tvoc).toFixed(3);
-    if (tvoc_gauge.minValue >= tvoc && tvoc_gauge.maxValue <= tvoc) {
+    const tvoc = +parseFloat(data.tvoc).toFixed(3);
+    if (tvoc_gauge.minValue <= tvoc && tvoc_gauge.maxValue >= tvoc) {
         tvoc_gauge.set(tvoc);
         tvoc_val.innerHTML = tvoc + " mg/m3";
     }
