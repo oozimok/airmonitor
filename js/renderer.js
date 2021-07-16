@@ -105,7 +105,7 @@ window.api.receive('data-result', (data) => {
     // CO2
     const co2 = +parseFloat(data.co2).toFixed(2);
     if (co2_gauge.minValue <= co2 && co2_gauge.maxValue >= co2) {
-        co2_gauge.set(0);
+        co2_gauge.set(co2);
         co2_val.innerHTML = co2 + " ppm";
     }
 
