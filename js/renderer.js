@@ -88,6 +88,10 @@ const tvoc_gauge = new Gauge(tvoc_target).setOptions(Object.assign(opts, {
 tvoc_gauge.maxValue = 10;
 tvoc_gauge.minValue = 0;
 
+// ERROR
+const error_val = document.getElementById('error');
+error_val.innerHTML = 0;
+
 window.api.send('get-device');
 
 window.api.receive('device-result', (data) => {
@@ -136,4 +140,8 @@ window.api.receive('data-result', (data) => {
         tvoc_gauge.set(tvoc);
         tvoc_val.innerHTML = tvoc + " mg/m3";
     }
+});
+
+window.api.receive('data-error', (count) => {
+    error_val.innerHTML = count;
 });

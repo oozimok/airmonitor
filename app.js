@@ -1,6 +1,7 @@
 const { app, BrowserWindow, screen, ipcMain } = require('electron');
 const miio = require('miio');
 const path = require('path');
+const configuration = require('./config.json');
 const dev = false;
 
 if (dev) {
@@ -19,6 +20,7 @@ class ClearGrassAirMonitor {
         this.log = log;
         this.win = null;
         this.device = null;
+        this.error = 0;
     }
 
     createWindow() {
@@ -31,6 +33,7 @@ class ClearGrassAirMonitor {
             title: 'AirMonitor',
             frame: true,
             backgroundColor: '#000000',
+            titleBarStyle: 'hidden',
             webPreferences: {
                 nodeIntegration: false, // значение по умолчанию после Electron v5
                 contextIsolation: true, // защита от загрязнения прототипа
@@ -53,6 +56,7 @@ class ClearGrassAirMonitor {
         ipcMain.on('get-data', async (event, args) => {
             const value = await this.getData();
             this.win.webContents.send('data-result', value);
+            this.cleanError();
         });
     }
 
@@ -68,6 +72,7 @@ class ClearGrassAirMonitor {
             })
             .catch(err => {
                 this.log.debug('Failed to discover Clear Grass at %s', this.ip);
+                this.incError();
                 return false;
             });
     }
@@ -78,7 +83,20 @@ class ClearGrassAirMonitor {
         }
         return await this.device.call("get_prop", ["co2","pm25","tvoc","temperature","humidity"])
             .then(this.convertData)
-            .catch(err => this.log.debug('Failed to get_prop  %s', err));
+            .catch(err => {
+                this.log.debug('Failed to get_prop  %s', err);
+                this.incError();
+            });
+    }
+
+    cleanError() {
+        this.error = 0;
+    }
+
+    incError() {
+        this.error++;
+        const count = this.error > 99 ? '99+' : this.error;
+        this.win.webContents.send('data-error', count);
     }
 
     convertData(result = {co2: 0, pm25: 0, tvoc: 0, temperature:0, humidity:0}) {
@@ -93,10 +111,7 @@ class ClearGrassAirMonitor {
 }
 
 app.whenReady().then(() => {
-    const cgim = new ClearGrassAirMonitor({
-        ip: '192.168.2.2',
-        //token: '6542485a75706143416f517471645968',
-    }, console);
+    const cgim = new ClearGrassAirMonitor(configuration, console);
     cgim.createWindow();
     cgim.listener();
     app.on('activate', () => {
@@ -105,5 +120,5 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
+    app.quit();
 });

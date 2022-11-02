@@ -17,7 +17,7 @@ contextBridge.exposeInMainWorld(
             }
         },
         receive: (channel, func) => {
-            let validChannels = ['device-result', 'data-result'];
+            let validChannels = ['device-result', 'data-result', 'data-error'];
             if (validChannels.includes(channel)) {
                 console.log('receive', {channel});
                 // умышленно удалить событие, так как оно включает "отправителя"
