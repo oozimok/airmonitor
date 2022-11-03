@@ -20,6 +20,11 @@
             <p id="humidity">0</p>
         </div>
         <div>
+            <h3>Частицы РМ1.0</h3>
+            <canvas id="chart-pm10"></canvas>
+            <p id="pm10">0</p>
+        </div>
+        <div>
             <h3>Частицы РМ2.5</h3>
             <canvas id="chart-pm25"></canvas>
             <p id="pm25">0</p>
@@ -35,7 +40,17 @@
             <p id="tvoc">0</p>
         </div>
     </div>
-    <div id="error" class="error">0</div>
+    <div class="container">
+        <div class="info">
+            <div id="diff" class="diff">diff: --/--/--</div>
+            <div id="battery" class="battery">battery: -</div>
+            <div id="error" class="error">error: -</div>
+            <div class="dropdown">
+                <div id="loading" class="loading"></div>
+                <select id="devices" name="device" class="dropdown-select"></select>
+            </div>
+        </div>
+    </div>
     <script src="./js/gauge.min.js"></script>
     <script src="./js/renderer.js"></script>
 </body>

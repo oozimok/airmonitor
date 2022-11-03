@@ -1,4 +1,6 @@
 {
-  "ip": "192.168.2.2",
-  "token": "7342364c5a706c56433767747a307143"
+  "grantType": "client_credentials",
+  "clientId": "BPu1bQLGg",
+  "clientSecret": "08b4839766fd11ebbb0500163e06ed69",
+  "tokenEndpoint": "https://oauth.cleargrass.com/oauth2/token"
 }

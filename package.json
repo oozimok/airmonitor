@@ -14,8 +14,6 @@
   },
   "dependencies": {
     "@badgateway/oauth2-client": "^2.0.16",
-    "express": "^4.16.3",
-    "miio": "^0.15.6",
     "node-fetch": "^2.6.7",
     "socket.io": "^2.1.1"
   },

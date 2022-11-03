@@ -10,7 +10,7 @@ contextBridge.exposeInMainWorld(
     'api', {
         send: (channel, data) => {
             // добавить каналы в белый список
-            let validChannels = ['get-device', 'get-data'];
+            let validChannels = ['get-device', 'set-setting', 'get-data'];
             if (validChannels.includes(channel)) {
                 console.log('send', {channel, data});
                 ipcRenderer.send(channel, data);
