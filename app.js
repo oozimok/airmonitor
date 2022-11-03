@@ -125,8 +125,8 @@ class ClearGrassAirMonitor {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 mac: [mac],
-                report_interval: 10,
-                collect_interval: 5,
+                report_interval: 10, // Интервал передачи данных устройства (секунды)
+                collect_interval: 5, // Интервал сбора данных устройства (секунды)
                 timestamp,
             })
         };
@@ -139,13 +139,15 @@ class ClearGrassAirMonitor {
     async getData(mac) {
         const timestamp = new Date().getTime();
         const end_time = timestamp / 1000 | 0;
-        const start_time = end_time - 86000;
+        const start_time = end_time - 180; // 3 минуты
         return this.fetchWrapper
             .fetch('https://apis.cleargrass.com/v1/apis/devices/data?mac=' + mac + '&limit=100&start_time=' + start_time + '&end_time=' + end_time + '&timestamp=' + timestamp)
             .then((response) => response.json())
             .then((response) => {
-                console.log(response);
                 if (response && response.total > 0 && Array.isArray(response.data)) {
+                    // сортируем список данных
+                    response.data.sort((a, b) => b.timestamp.value - a.timestamp.value);
+                    // конвертируем и возвращаем данные
                     return response.data[0] ? this.convertData(response.data[0]) : null;
                 }
             })
