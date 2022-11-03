@@ -1,5 +1,7 @@
 # ClearGrass Air monitor
 
+<img width="1840" alt="window" src="https://user-images.githubusercontent.com/433396/199730283-bccf08fb-c48c-4587-a479-2cb6ec66486d.png">
+
 ## Install dependencies
 
 ```sh
