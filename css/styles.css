@@ -27,6 +27,15 @@ p {
     font-size: 2rem;
     text-align: center;
 }
+video {
+    width: 250px;
+    height: 250px;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+}
 
 .container {
     width: 100%;

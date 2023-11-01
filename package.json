@@ -1,66 +1,35 @@
 {
+  "displayName": "AirMonitor",
   "name": "airmonitor",
-  "version": "1.0.0",
   "description": "ClearGrass AirMonitor",
-  "main": "app.js",
-  "author": "Oleg Ozimok",
-  "license": "ISC",
+  "version": "1.1.0",
+  "main": "./app.js",
+  "resources": "src/resources",
+  "author": {
+    "name": "Oleg Ozimok",
+    "email": "oleg.ozimok@icloud.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oozimok/airmonitor.git"
+  },
+  "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "win": "electron-builder --win portable",
-    "mac": "electron-builder --mac pkg"
+    "mac": "electron-builder --mac pkg",
+    "lin": "electron-builder --linux",
+    "publish": "electron-builder --publish always"
   },
   "dependencies": {
     "@badgateway/oauth2-client": "^2.0.16",
     "node-fetch": "^2.6.7",
-    "socket.io": "^2.1.1"
+    "socket.io": "^4.7.2"
   },
   "devDependencies": {
-    "electron": "^13.0.1",
+    "electron": "^17.4.7",
     "electron-builder": "^23.6.0",
     "electron-reloader": "^1.2.1"
-  },
-  "build": {
-    "productName": "AirMonitor",
-    "appId": "ozimok.AirMonitor",
-    "copyright": "Copyright © 2022 ${author}",
-    "win": {
-      "target": [
-        "portable"
-      ],
-      "icon": "assets/win/icon.ico"
-    },
-    "mac": {
-      "target": [
-        "dmg"
-      ],
-      "identity": null,
-      "icon": "assets/mac/icon.icns",
-      "category": "ozimok.AirMonitor.app.category.utilities"
-    },
-    "dmg": {
-      "contents": [
-        {
-          "x": 110,
-          "y": 150
-        },
-        {
-          "x": 240,
-          "y": 150,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "portable": {
-      "artifactName": "AirMonitor.exe"
-    },
-    "directories": {
-      "output": "electron/output",
-      "app": "./",
-      "buildResources": "electron/buildResources"
-    }
   }
 }

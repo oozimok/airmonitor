@@ -5,7 +5,7 @@
 ## Install dependencies
 
 ```sh
-npm i
+yarn
 ```
 
 Get AirMonitor Windows / Mac OS app.
@@ -13,7 +13,7 @@ Get AirMonitor Windows / Mac OS app.
 ## Run on dev mode
 
 ```sh
-npm start
+yarn start
 ```
 
 ### The electron folder is created in the project director and applications will be built there.
@@ -21,11 +21,17 @@ npm start
 ### Build Windows
 
 ```sh
-npm run win
+yarn win
 ```
 
 ### Build Mac
 
 ```sh
-npm run mac
+yarn mac
+```
+
+### Build Linux
+
+```sh
+yarn lin
 ```

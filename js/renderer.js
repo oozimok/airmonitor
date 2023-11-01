@@ -14,8 +14,13 @@ const opts = {
 };
 let interval = null;
 
+
 // HIDE SCROLL
 document.body.style.overflow = 'hidden';
+
+// ANIMATION
+const video = document.getElementById('video');
+const source = document.createElement('source');
 
 // CO2
 const co2_target = document.getElementById('chart-co2');
@@ -184,6 +189,8 @@ const setData = (data) => {
     if (co2_gauge.minValue <= co2 && co2_gauge.maxValue >= co2) {
         co2_gauge.set(co2);
         co2_val.innerHTML = `${co2} ppm`;
+        // video
+        setCO2Video(co2);
     }
 
     // HUMIDITY
@@ -228,6 +235,45 @@ const setData = (data) => {
     // BATTERY
     const battery = parseFloat(data.battery).toFixed(0);
     battery_val.innerHTML = setBattery(battery);
+}
+
+// SET CO2 VIDEO
+const setCO2Video = (co2) => {
+    // configuration
+    let params = {};
+    if (co2 >= 1000 && co2 < 1100) {
+        params.file = 'loli_dance';
+        params.width = '512px';
+        params.height = '512px';
+        params.top = '-150px';
+        params.left = '4%';
+    } else if (co2 >= 1100 && co2 < 1200) {
+        params.file = 'panic';
+        params.width = '350px';
+        params.height = '350px';
+        params.top = '-30px';
+        params.left = '8%';
+    } else if (co2 >= 1200) {
+        params.file = 'passed_out';
+        params.width = '350px';
+        params.height = '350px';
+        params.top = '-30px';
+        params.left = '9%';
+    }
+
+    // play
+    if (Object.keys(params).length) {
+        source.setAttribute('src', `assets/video/${params.file}.webm`);
+        source.setAttribute('type', 'video/webm');
+        video.appendChild(source);
+        video.style.visibility = 'visible';
+        video.style.width = params.width;
+        video.style.height = params.height;
+        video.style.top = params.top;
+        video.style.left = params.left;
+    } else {
+        video.style.visibility = 'hidden';
+    }
 }
 
 // REQUEST LIST DEVICES
