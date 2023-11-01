@@ -241,24 +241,24 @@ const setData = (data) => {
 const setCO2Video = (co2) => {
     // configuration
     let params = {};
-    if (co2 >= 1000 && co2 < 1100) {
+    if (co2 >= 1000/* && co2 < 1100*/) {
         params.file = 'loli_dance';
         params.width = '512px';
         params.height = '512px';
         params.top = '-150px';
         params.left = '4%';
-    } else if (co2 >= 1100 && co2 < 1200) {
-        params.file = 'panic';
-        params.width = '350px';
-        params.height = '350px';
-        params.top = '-30px';
-        params.left = '8%';
-    } else if (co2 >= 1200) {
-        params.file = 'passed_out';
-        params.width = '350px';
-        params.height = '350px';
-        params.top = '-30px';
-        params.left = '9%';
+    // } else if (co2 >= 1100 && co2 < 1200) {
+    //     params.file = 'panic';
+    //     params.width = '350px';
+    //     params.height = '350px';
+    //     params.top = '-30px';
+    //     params.left = '8%';
+    // } else if (co2 >= 1200) {
+    //     params.file = 'passed_out';
+    //     params.width = '350px';
+    //     params.height = '350px';
+    //     params.top = '-30px';
+    //     params.left = '9%';
     }
 
     // play
