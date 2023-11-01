@@ -259,6 +259,7 @@ const setCO2Video = (co2) => {
     //     params.height = '350px';
     //     params.top = '-30px';
     //     params.left = '9%';
+
     }
 
     // play
